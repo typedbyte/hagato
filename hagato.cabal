@@ -1,0 +1,366 @@
+cabal-version:   3.0
+name:            hagato
+version:         0.1.0.0
+synopsis:        Haskell Gamedev Toolkit
+description:     Please see the README on GitHub at <https://github.com/typedbyte/hagato#readme>
+homepage:        https://github.com/typedbyte/hagato
+bug-reports:     https://github.com/typedbyte/hagato/issues
+license:         BSD-3-Clause
+license-file:    LICENSE
+author:          Michael Szvetits
+maintainer:      typedbyte@qualified.name
+copyright:       2023 Michael Szvetits
+category:        Game
+build-type:      Simple
+extra-doc-files:
+  CHANGELOG.md
+  README.md
+
+common shared-properties
+  default-language: GHC2021
+  build-depends:
+      base >=4.7 && <5
+  ghc-options:
+     -Wall
+  default-extensions:
+      DuplicateRecordFields
+      NoFieldSelectors
+      OverloadedRecordDot
+
+common vulkan-dependency
+  build-depends:
+      vulkan >= 3.23
+
+library with-core
+  import: shared-properties
+  visibility: public
+  hs-source-dirs:
+      src/hagato-core
+  build-depends:
+      time
+  exposed-modules:
+      Hagato.Core
+      Hagato.Core.Animation
+      Hagato.Core.Animation.Float
+      Hagato.Core.Animation.Vec3
+      Hagato.Core.Camera
+      Hagato.Core.Extra
+      Hagato.Core.Input
+      Hagato.Core.Log
+      Hagato.Core.Loop
+      Hagato.Core.Math
+      Hagato.Core.Math.Mat4
+      Hagato.Core.Math.Plane
+      Hagato.Core.Math.Quaternion
+      Hagato.Core.Math.Ray
+      Hagato.Core.Math.Vec2
+      Hagato.Core.Math.Vec3
+      Hagato.Core.Math.Vec4
+
+library with-core-effectful
+  import: shared-properties
+  visibility: public
+  hs-source-dirs:
+      src/hagato-core-effectful
+  build-depends:
+      effectful-core
+    , hagato:with-core
+  exposed-modules:
+      Hagato.Core.Effectful
+      Hagato.Core.Effectful.Log
+
+library with-glfw
+  import:
+      shared-properties
+    , vulkan-dependency
+  visibility: public
+  hs-source-dirs:
+      src/hagato-glfw
+  build-depends:
+      GLFW-b
+    , hagato:with-core
+    , hagato:with-vulkan
+  exposed-modules:
+      Hagato.GLFW
+      Hagato.GLFW.Input
+      Hagato.GLFW.Instance
+      Hagato.GLFW.Window
+
+library with-glfw-effectful
+  import: shared-properties
+  visibility: public
+  hs-source-dirs:
+      src/hagato-glfw-effectful
+  build-depends:
+      effectful-core
+    , hagato:with-glfw
+    , hagato:with-vulkan-effectful
+    , resource-effectful
+  exposed-modules:
+      Hagato.GLFW.Effectful
+      Hagato.GLFW.Effectful.Window
+
+library with-gltf
+  import: shared-properties
+  visibility: public
+  hs-source-dirs:
+      src/hagato-gltf
+  build-depends:
+      aeson
+    , base64
+    , binary
+    , bytestring
+    , containers
+    , filepath
+    , hagato:with-core
+    , text
+    , vector
+  exposed-modules:
+      Hagato.GLTF
+      Hagato.GLTF.Accessor
+      Hagato.GLTF.Aeson
+      Hagato.GLTF.Animation
+      Hagato.GLTF.Asset
+      Hagato.GLTF.AssetInfo
+      Hagato.GLTF.Attribute
+      Hagato.GLTF.Buffer
+      Hagato.GLTF.BufferView
+      Hagato.GLTF.Camera
+      Hagato.GLTF.Chunk
+      Hagato.GLTF.Exception
+      Hagato.GLTF.Header
+      Hagato.GLTF.Image
+      Hagato.GLTF.Index
+      Hagato.GLTF.Material
+      Hagato.GLTF.Mesh
+      Hagato.GLTF.MetallicRoughness
+      Hagato.GLTF.Monad
+      Hagato.GLTF.Node
+      Hagato.GLTF.Sampler
+      Hagato.GLTF.Scene
+      Hagato.GLTF.Skin
+      Hagato.GLTF.Texture
+      Hagato.GLTF.TextureInfo
+      Hagato.GLTF.Transmission
+      Hagato.GLTF.URI
+
+library with-gltf-vulkan
+  import:
+      shared-properties
+    , vulkan-dependency
+  visibility: public
+  hs-source-dirs:
+      src/hagato-gltf-vulkan
+  build-depends:
+      hagato:with-gltf
+  exposed-modules:
+      Hagato.GLTF.Vulkan
+
+library with-gltf-effectful
+  import: shared-properties
+  visibility: public
+  hs-source-dirs:
+      src/hagato-gltf-effectful
+  build-depends:
+      bytestring
+    , effectful-core
+    , hagato:with-gltf
+    , text
+  exposed-modules:
+      Hagato.GLTF.Effectful
+
+library with-vma
+  import:
+      shared-properties
+    , vulkan-dependency
+  visibility: public
+  hs-source-dirs:
+      src/hagato-vma
+  build-depends:
+      hagato:with-vulkan
+    , VulkanMemoryAllocator
+  exposed-modules:
+      Hagato.Vulkan.MemoryAllocator
+
+library with-vma-effectful
+  import: shared-properties
+  visibility: public
+  hs-source-dirs:
+      src/hagato-vma-effectful
+  build-depends:
+      effectful-core
+    , hagato:with-vma
+    , hagato:with-vulkan-effectful
+    , VulkanMemoryAllocator
+  exposed-modules:
+      Hagato.Vulkan.Effectful.MemoryAllocator
+
+library with-vulkan
+  import:
+      shared-properties
+    , vulkan-dependency
+  visibility: public
+  hs-source-dirs:
+      src/hagato-vulkan
+  build-depends:
+      bytestring
+    , containers
+    , hagato:with-core
+    , logict
+    , unliftio-core
+    , vector
+  exposed-modules:
+      Hagato.Vulkan
+      Hagato.Vulkan.Buffer
+      Hagato.Vulkan.Builder
+      Hagato.Vulkan.Camera
+      Hagato.Vulkan.Command
+      Hagato.Vulkan.CommandBuffer
+      Hagato.Vulkan.CommandPool
+      Hagato.Vulkan.DescriptorSet
+      Hagato.Vulkan.DescriptorSetAllocator
+      Hagato.Vulkan.Device
+      Hagato.Vulkan.Exception
+      Hagato.Vulkan.Fence
+      Hagato.Vulkan.Frame
+      Hagato.Vulkan.Framebuffer
+      Hagato.Vulkan.Image
+      Hagato.Vulkan.ImageView
+      Hagato.Vulkan.Instance
+      Hagato.Vulkan.Memory
+      Hagato.Vulkan.PhysicalDevice
+      Hagato.Vulkan.Pipeline
+      Hagato.Vulkan.PipelineLayout
+      Hagato.Vulkan.Queue
+      Hagato.Vulkan.RenderPass
+      Hagato.Vulkan.Result
+      Hagato.Vulkan.Sampler
+      Hagato.Vulkan.Semaphore
+      Hagato.Vulkan.Shader
+      Hagato.Vulkan.Swapchain
+      Hagato.Vulkan.Version
+      Hagato.Vulkan.VirtualFrame
+      Hagato.Vulkan.Window
+  other-modules:
+      Control.Monad.Logic.Extra
+      Data.Bits.Extra
+      Data.List.Extra
+      Data.Ord.Extra
+
+library with-vulkan-effectful
+  import:
+      shared-properties
+    , vulkan-dependency
+  visibility: public
+  hs-source-dirs:
+      src/hagato-vulkan-effectful
+  build-depends:
+      bytestring
+    , effectful-core
+    , hagato:with-core
+    , hagato:with-vulkan
+    , resource-effectful
+    , vector
+  exposed-modules:
+      Hagato.Vulkan.Effectful
+      Hagato.Vulkan.Effectful.Buffer
+      Hagato.Vulkan.Effectful.Command
+      Hagato.Vulkan.Effectful.CommandBuffer
+      Hagato.Vulkan.Effectful.CommandPool
+      Hagato.Vulkan.Effectful.DescriptorSet
+      Hagato.Vulkan.Effectful.DescriptorSetAllocator
+      Hagato.Vulkan.Effectful.Device
+      Hagato.Vulkan.Effectful.Fence
+      Hagato.Vulkan.Effectful.Frame
+      Hagato.Vulkan.Effectful.Framebuffer
+      Hagato.Vulkan.Effectful.Image
+      Hagato.Vulkan.Effectful.ImageView
+      Hagato.Vulkan.Effectful.Instance
+      Hagato.Vulkan.Effectful.Memory
+      Hagato.Vulkan.Effectful.Pipeline
+      Hagato.Vulkan.Effectful.PipelineLayout
+      Hagato.Vulkan.Effectful.RenderPass
+      Hagato.Vulkan.Effectful.Sampler
+      Hagato.Vulkan.Effectful.Semaphore
+      Hagato.Vulkan.Effectful.Shader
+      Hagato.Vulkan.Effectful.Swapchain
+      Hagato.Vulkan.Effectful.VirtualFrame
+      Hagato.Vulkan.Effectful.Window
+
+--------------------
+-- EXAMPLE: CHESS --
+--------------------
+library chess
+  import:
+      shared-properties
+    , vulkan-dependency
+  visibility: private
+  exposed-modules:
+      ChessExample.Component.Animation
+      ChessExample.Component.Camera
+      ChessExample.Component.Environment
+      ChessExample.Component.Focus
+      ChessExample.Component.Index
+      ChessExample.Component.Mesh
+      ChessExample.Component.Screen
+      ChessExample.Component.Transform
+      ChessExample.Game
+      ChessExample.GameState
+      ChessExample.System.Animator
+      ChessExample.System.Artist
+      ChessExample.System.Asset
+      ChessExample.System.Director
+      ChessExample.System.Input
+      ChessExample.System.Player
+      ChessExample.System.Referee
+      ChessExample.System.World
+      ChessExample.Vulkan.Memory
+      ChessExample.Vulkan.Renderer
+      ChessExample.Vulkan.Setup
+      Effectful.Extra
+  hs-source-dirs:
+      examples/chess/src
+  build-depends:
+      apecs-effectful
+    , bytestring
+    , chessica
+    , containers
+    , effectful-core
+    , effectful-plugin
+    , hagato:with-core
+    , hagato:with-core-effectful
+    , hagato:with-gltf
+    , hagato:with-gltf-effectful
+    , hagato:with-gltf-vulkan
+    , hagato:with-vulkan
+    , hagato:with-vulkan-effectful
+    , JuicyPixels
+    , resource-effectful
+    , text
+    , vector
+  ghc-options:
+      -fplugin=Effectful.Plugin
+
+test-suite chess-glfw
+  import:
+      shared-properties
+    , vulkan-dependency
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  hs-source-dirs:
+      examples/chess/app/chess-glfw
+  ghc-options:
+    -threaded
+    -rtsopts
+    -with-rtsopts=-N
+    -fplugin=Effectful.Plugin
+  build-depends:
+      chess
+    , effectful-core
+    , effectful-plugin
+    , hagato:with-core-effectful
+    , hagato:with-glfw-effectful
+    , hagato:with-vma-effectful
+    , hagato:with-vulkan
+    , resource-effectful
+    , vector
