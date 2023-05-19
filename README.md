@@ -17,6 +17,8 @@ Many libraries have a companion sub-library with the name suffix [`*-effectful`]
 
 ## Example: 3D Chess
 
+https://github.com/typedbyte/hagato/assets/30292504/bcae68f7-f3e6-4786-857b-7edf580704d0
+
 A fully functional and documented 3D chess game implemented with `hagato` can be found [here](/examples/chess). It demonstrates a great amount of features provided by the `hagato` package.
 
 In order to run the chess example, execute `cabal run`. You need the Vulkan SDK installed and tell cabal where to find it, for example by using a `cabal.project.local` file:
