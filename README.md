@@ -17,7 +17,7 @@ Many libraries have a companion sub-library with the name suffix [`*-effectful`]
 
 ## Example: 3D Chess
 
-https://github.com/typedbyte/hagato/assets/30292504/bcae68f7-f3e6-4786-857b-7edf580704d0
+https://github.com/typedbyte/hagato/assets/30292504/dba5fe84-edf9-4c4d-8fe2-7f2239ee8612
 
 A fully functional and documented 3D chess game implemented with `hagato` can be found [here](/examples/chess). It demonstrates a great amount of features provided by the `hagato` package.
 
