@@ -1,22 +1,74 @@
-module Hagato.Core.Input where
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.Core.Input
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types for representing different kinds of inputs.
+-----------------------------------------------------------------------------
+module Hagato.Core.Input
+  ( -- * Polled Input
+    Input(..)
+  , Event(..)
+    -- * Keyboard Input
+  , Key(..)
+  , KeyState(..)
+  , Modifiers(..)
+    -- * Mouse Input
+  , MouseButton(..)
+  , MouseButtonState(..)
+  ) where
 
 import Hagato.Core.Math.Vec2 (Vec2)
 
+-- | Represents the information gathered from an input poll.
 data Input = Input
   { events :: ![Event]
+    -- ^ Events since the last input poll, sorted from oldest to newest.
   , cursor :: !Vec2
+    -- ^ Mouse cursor position at the time of input polling.
   }
   deriving (Eq, Ord, Read, Show)
 
+-- | Represents the different kinds of events that are collected when polling for input.
 data Event
-  = KeyEvent !Key !Int !KeyState !Modifiers
-  | MouseEvent !Vec2 !MouseButton !MouseButtonState !Modifiers
-  | ScrollEvent !Vec2 !Vec2
-  | ResizeEvent !Vec2
+  = KeyEvent
+      !Key
+      -- ^ Key that participated in the event.
+      !Int
+      -- ^ Unique scancode of the key.
+      !KeyState
+      -- ^ State of the participated key.
+      !Modifiers
+      -- ^ Modifiers that were held down during the event.
+  | MouseEvent
+      !Vec2
+      -- ^ Cursor position at the time of the mouse event.
+      !MouseButton
+      -- ^ Mouse button that participated in the event.
+      !MouseButtonState
+      -- ^ State of the participated mouse button.
+      !Modifiers
+      -- ^ Modifiers that were held down during the event.
+  | ScrollEvent
+      !Vec2
+      -- ^ Cursor position at the time of the scroll event.
+      !Vec2
+      -- ^ Horizontal (x) and vertical (y) scroll offset.
+      -- The standard mouse wheel triggers a vertical offset.
+  | ResizeEvent
+      !Vec2
+      -- ^ New framebuffer width (x) and height (y) after a window resize.
   | CloseEvent
-  | TickEvent !Float
+  | TickEvent
+      !Float
+      -- ^ Elapsed time in seconds since the last poll.
   deriving (Eq, Ord, Read, Show)
 
+-- | Represents the different kinds of keys.
 data Key
   = Key'Unknown
   | Key'Space
@@ -141,12 +193,14 @@ data Key
   | Key'Menu
   deriving (Eq, Ord, Read, Show)
 
+-- | Represents the push state of a key.
 data KeyState
   = Key'Pressed
   | Key'Released
   | Key'Repeating
   deriving (Eq, Ord, Read, Show)
 
+-- | Represents the states of special keys at the time of events.
 data Modifiers = Modifiers
   { shift    :: Bool
   , control  :: Bool
@@ -157,6 +211,7 @@ data Modifiers = Modifiers
   }
   deriving (Eq, Ord, Read, Show)
 
+-- | Represents the different kinds of mouse buttons.
 data MouseButton
   = Mouse'Left
   | Mouse'Right
@@ -168,6 +223,7 @@ data MouseButton
   | Mouse'Extra5
   deriving (Eq, Ord, Read, Show)
 
+-- | Represents the push state of a mouse button.
 data MouseButtonState
   = Mouse'Pressed
   | Mouse'Released
