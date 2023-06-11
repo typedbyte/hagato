@@ -1,19 +1,35 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.Core.Math.Mat4
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types and functions for handling 4x4 matrices.
+-----------------------------------------------------------------------------
 module Hagato.Core.Math.Mat4
-  ( Mat4(..)
+  ( -- * Matrix Construction
+    Mat4(..)
   , rowMajor
   , columnMajor
-  , multiply
-  , multiplyVector
+  , fromTranslation
   , fromRotation
   , fromScale
-  , fromTranslation
   , fromTRS
+    -- * Matrix Inspection
+  , toTranslation
   , toRotation
   , toScale
-  , toTranslation
   , toTRS
+    -- * Matrix Update
   , setTranslation
+    -- * Matrix Operations
+  , multiply
+  , multiplyVector
   , inverseTransform
+    -- * (De-)Serialization
   , RowMajor(..)
   , ColumnMajor(..)
   ) where
@@ -26,6 +42,7 @@ import Hagato.Core.Math.Quaternion (Quaternion(Quaternion))
 import Hagato.Core.Math.Vec3       (Vec3(Vec3))
 import Hagato.Core.Math.Vec4       (Vec4(Vec4))
 
+-- | Represents a row-major 4x4 matrix.
 data Mat4 =
   Mat4
     {-# UNPACK #-} !Float {-# UNPACK #-} !Float {-# UNPACK #-} !Float {-# UNPACK #-} !Float
@@ -35,6 +52,7 @@ data Mat4 =
   deriving
     (Eq, Ord, Read, Show)
 
+-- | Constructs a 4x4 row-major matrix.
 rowMajor
   :: Float -> Float -> Float -> Float
   -> Float -> Float -> Float -> Float
@@ -44,6 +62,7 @@ rowMajor
 rowMajor = Mat4
 {-# INLINE rowMajor #-}
 
+-- | Constructs a 4x4 column-major matrix.
 columnMajor
   :: Float -> Float -> Float -> Float
   -> Float -> Float -> Float -> Float
@@ -63,6 +82,7 @@ columnMajor
         m41 m42 m43 m44
 {-# INLINE columnMajor #-}
 
+-- | Multiplies two matrices.
 multiply :: Mat4 -> Mat4 -> Mat4
 multiply
   ( Mat4
@@ -104,6 +124,7 @@ multiply
         m41 m42 m43 m44
 {-# INLINE multiply #-}
 
+-- | Multiplies a matrix by a vector.
 infixr 9 `multiplyVector`
 multiplyVector :: Mat4 -> Vec4 -> Vec4
 multiplyVector
@@ -125,6 +146,7 @@ multiplyVector
       Vec4 vx vy vz vw
 {-# INLINE multiplyVector #-}
 
+-- | Constructs a transformation matrix from a rotation.
 fromRotation :: Quaternion -> Mat4
 fromRotation (Quaternion w x y z) =
   rowMajor
@@ -144,6 +166,7 @@ fromRotation (Quaternion w x y z) =
     zw = z*w
 {-# INLINE fromRotation #-}
 
+-- | Constructs a transformation matrix from a @x\/y\/z@ scale.
 fromScale :: Vec3 -> Mat4
 fromScale (Vec3 sx sy sz) =
   rowMajor
@@ -153,6 +176,7 @@ fromScale (Vec3 sx sy sz) =
      0  0  0 1
 {-# INLINE fromScale #-}
 
+-- | Constructs a transformation matrix from a @x\/y\/z@ translation.
 fromTranslation :: Vec3 -> Mat4
 fromTranslation (Vec3 tx ty tz) =
   rowMajor
@@ -162,6 +186,7 @@ fromTranslation (Vec3 tx ty tz) =
     0 0 0  1
 {-# INLINE fromTranslation #-}
 
+-- | Constructs a transformation matrix from a @x\/y\/z@ translation, rotation and @x\/y\/z@ scale.
 fromTRS :: Vec3 -> Quaternion -> Vec3 -> Mat4
 fromTRS translation rotation scale =
   fromTranslation translation `multiply`
@@ -169,6 +194,7 @@ fromTRS translation rotation scale =
   fromScale scale
 {-# INLINE fromTRS #-}
 
+-- | Reconstructs the rotation from a transformation matrix when knowing the @x\/y\/z@ scale.
 withScaleToRotation :: Vec3 -> Mat4 -> Quaternion
 withScaleToRotation
   ( Vec3 sx sy sz )
@@ -228,11 +254,13 @@ withScaleToRotation
       Quaternion (qr0/r) (qr1/r) (qr2/r) (qr3/r)
 {-# INLINE withScaleToRotation #-}
 
+-- | Reconstructs the rotation from a transformation matrix.
 toRotation :: Mat4 -> Quaternion
 toRotation matrix =
   withScaleToRotation (toScale matrix) matrix
 {-# INLINE toRotation #-}
 
+-- | Reconstructs the @x\/y\/z@ scale from a transformation matrix.
 toScale :: Mat4 -> Vec3
 toScale
   ( Mat4
@@ -248,6 +276,7 @@ toScale
       ( sqrt $ x3*x3 + y3*y3 + z3*z3 )
 {-# INLINE toScale #-}
 
+-- | Reconstructs the @x\/y\/z@ translation from a transformation matrix.
 toTranslation :: Mat4 -> Vec3
 toTranslation
   ( Mat4
@@ -260,6 +289,7 @@ toTranslation
     Vec3 tx ty tz
 {-# INLINE toTranslation #-}
 
+-- | Reconstructs the @x\/y\/z@ translation, rotation and @x\/y\/z@ scale from a transformation matrix.
 toTRS :: Mat4 -> (Vec3, Quaternion, Vec3)
 toTRS matrix = (translation, rotation, scale)
   where
@@ -268,6 +298,7 @@ toTRS matrix = (translation, rotation, scale)
     scale       = toScale matrix
 {-# INLINE toTRS #-}
 
+-- | Updates the translation component of a transformation matrix.
 setTranslation :: Vec3 -> Mat4 -> Mat4
 setTranslation
   ( Vec3 tx ty tz )
@@ -285,6 +316,9 @@ setTranslation
       a   b  c  d
 {-# INLINE setTranslation #-}
 
+-- | Calculates the inverse matrix of a transformation matrix.
+--
+-- Note that this function cannot be used for calculating inverse matrices in general.
 inverseTransform :: Mat4 -> Mat4
 inverseTransform
   ( Mat4
@@ -319,6 +353,7 @@ inverseTransform
         z1D z2D z3D (valueDot nt1 nt2 nt3 z1D z2D z3D)
           0   0   0                                  1
 
+-- | Represents a row-major value. Can be used to pick the correct 'Storable' instance.
 newtype RowMajor a = RowMajor a
   deriving
     (Eq, Ord, Read, Show)
@@ -390,6 +425,7 @@ instance Storable (RowMajor Mat4) where
         pokeByteOff floatPtr 60 m44
   {-# INLINE poke #-}
 
+-- | Represents a column-major value. Can be used to pick the correct 'Storable' instance.
 newtype ColumnMajor a = ColumnMajor a
   deriving
     (Eq, Ord, Read, Show)

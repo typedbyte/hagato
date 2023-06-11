@@ -1,3 +1,14 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.Core.Math.Vec2
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types and functions for handling 2D vectors.
+-----------------------------------------------------------------------------
 module Hagato.Core.Math.Vec2 where
 
 -- base
@@ -5,6 +16,7 @@ import Foreign.Ptr      (castPtr)
 import Foreign.Storable (Storable(..))
 import Prelude   hiding (length)
 
+-- | Represents a 2D vector.
 data Vec2 =
   Vec2
     { x :: {-# UNPACK #-} !Float
@@ -74,11 +86,13 @@ instance Storable Vec2 where
       pokeByteOff floatPtr 4 y
   {-# INLINE poke #-}
 
+-- | Determines the length of a vector.
 length :: Vec2 -> Float
 length (Vec2 x y) =
   sqrt (x*x + y*y)
 {-# INLINE length #-}
 
+-- | Transforms a vector into one with unit length and same direction.
 normalize :: Vec2 -> Vec2
 normalize vec@(Vec2 x y) =
   let
@@ -87,11 +101,13 @@ normalize vec@(Vec2 x y) =
     Vec2 (x/l) (y/l)
 {-# INLINE normalize #-}
 
+-- | Determines the scalar product of two vectors.
 dot :: Vec2 -> Vec2 -> Float
 dot (Vec2 x1 y1) (Vec2 x2 y2) =
   x1*x2 + y1*y2
 {-# INLINE dot #-}
 
+-- | Multiplies a scalar by a vector.
 scalarMultiply :: Float -> Vec2 -> Vec2
 scalarMultiply scalar (Vec2 x y) =
   Vec2

@@ -9,7 +9,7 @@ import Effectful                    (Eff, IOE)
 import Effectful.State.Static.Local (evalState)
 
 -- hagato:with-core.effectful
-import Hagato.Core.Effectful (Log, loopUntil)
+import Hagato.Core.Effectful (Log, loopUntil_)
 
 -- hagato:with-vulkan
 import Hagato.Vulkan.PhysicalDevice (PhysicalDevice)
@@ -57,7 +57,7 @@ game layers =
     meshFactory <- loadScene renderer allocator 800 600
     initState   <- newGameState renderer meshFactory
     withRenderSetup renderSetup $
-      loopUntil (.done) initState $
+      loopUntil_ (.done) initState $
         \dt state -> do
           input     <- tickPoll dt window
           state'    <- process meshFactory input state
