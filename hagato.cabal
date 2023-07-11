@@ -78,6 +78,7 @@ library with-glfw
       src/hagato-glfw
   build-depends:
       GLFW-b
+    , unliftio-core
     , hagato:with-core
     , hagato:with-vulkan
   exposed-modules:

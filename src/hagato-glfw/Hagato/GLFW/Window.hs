@@ -1,5 +1,16 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLFW.Window
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types and functions for handling GLFW-based windows.
+-----------------------------------------------------------------------------
 module Hagato.GLFW.Window
-  ( GlfwWindow(..)
+  ( GlfwWindow
   , glfwStrategy
   ) where
 
@@ -25,12 +36,16 @@ import Vulkan qualified as Vk
 import Hagato.GLFW.Input    (mapKeyState, mapKey, mapModifiers, mapMouseButton, mapMouseButtonState)
 import Hagato.GLFW.Instance (GLFW)
 
+-- | Represents a GLFW-based window.
 data GlfwWindow = GlfwWindow
   { handle  :: GLFW.Window
   , resized :: MVar ()
   , events  :: IORef [Event]
   }
 
+-- | Creates a strategy (i.e., a record of functions) for creating, using and
+-- destroying GLFW-based windows. The 'GLFW' parameter acts as proof that GLFW
+-- has been initialized successfully.
 glfwStrategy :: GLFW -> Vk.WindowStrategy GlfwWindow
 glfwStrategy glfw =
   seq glfw $
@@ -68,9 +83,6 @@ glfwStrategy glfw =
       , _resized = \window -> do
           unchanged <- isEmptyMVar window.resized
           pure $ not unchanged
-          {-\window -> do
-          --events <- readIORef window.events
-          --pure $ not $ null [e | e@(ResizeEvent _) <- events]-}
       , _poll = \window -> do
           GLFW.pollEvents
           events  <- atomicModifyIORef' window.events (\is -> ([], reverse is))
@@ -131,11 +143,6 @@ glfwStrategy glfw =
         ScrollEvent
           ( Vec2 (realToFrac cx) (realToFrac cy) )
           ( Vec2 (realToFrac x) (realToFrac y) )
-    
-    {-sizeCallback :: IORef [Event] -> GLFW.FramebufferSizeCallback
-    sizeCallback ref _window width height = do
-      addEvent ref $
-        ResizeEvent (Vec2 (fromIntegral width) (fromIntegral height))-}
     
     sizeCallback :: MVar () -> GLFW.FramebufferSizeCallback
     sizeCallback var _window _width _height =

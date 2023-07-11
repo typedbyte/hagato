@@ -1,4 +1,15 @@
 {-# LANGUAGE LambdaCase #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLFW.Input
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Functions for mapping GLFW-specific input to generic hagato-based input.
+-----------------------------------------------------------------------------
 module Hagato.GLFW.Input where
 
 -- GLFW-b
@@ -7,6 +18,7 @@ import Graphics.UI.GLFW qualified as GLFW
 -- hagato:with-core
 import Hagato.Core qualified as Hagato
 
+-- | Maps a GLFW-based key to a hagato-based key.
 mapKey :: GLFW.Key -> Hagato.Key
 mapKey = \case
   GLFW.Key'Unknown      -> Hagato.Key'Unknown
@@ -131,17 +143,20 @@ mapKey = \case
   GLFW.Key'RightSuper   -> Hagato.Key'RightSuper
   GLFW.Key'Menu         -> Hagato.Key'Menu
 
+-- | Maps a GLFW-based key state to a hagato-based key state.
 mapKeyState :: GLFW.KeyState -> Hagato.KeyState
 mapKeyState = \case
   GLFW.KeyState'Pressed   -> Hagato.Key'Pressed
   GLFW.KeyState'Released  -> Hagato.Key'Released
   GLFW.KeyState'Repeating -> Hagato.Key'Repeating
 
+-- | Maps GLFW-based modifier keys to hagato-based modifier keys.
 mapModifiers :: GLFW.ModifierKeys -> Hagato.Modifiers
 mapModifiers = \case
   GLFW.ModifierKeys shift ctrl alt super caps num ->
     Hagato.Modifiers shift ctrl alt super caps num
 
+-- | Maps a GLFW-based mouse button to a hagato-based mouse button.
 mapMouseButton :: GLFW.MouseButton -> Hagato.MouseButton
 mapMouseButton = \case
   GLFW.MouseButton'1 -> Hagato.Mouse'Left
@@ -153,6 +168,7 @@ mapMouseButton = \case
   GLFW.MouseButton'7 -> Hagato.Mouse'Extra4
   GLFW.MouseButton'8 -> Hagato.Mouse'Extra5
 
+-- | Maps a GLFW-based mouse button state to a hagato-based mouse button state.
 mapMouseButtonState :: GLFW.MouseButtonState -> Hagato.MouseButtonState
 mapMouseButtonState = \case
   GLFW.MouseButtonState'Pressed  -> Hagato.Mouse'Pressed

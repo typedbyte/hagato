@@ -1,4 +1,15 @@
 {-# LANGUAGE DataKinds #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLFW.Effectful.Window
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- A handler for the 'Vk.Window' effect using GLFW.
+-----------------------------------------------------------------------------
 module Hagato.GLFW.Effectful.Window
   ( runWindow
   , module Hagato.GLFW.Window
@@ -17,6 +28,7 @@ import Hagato.Vulkan.Effectful qualified as Vk
 -- resource-effectful
 import Effectful.Resource (Resource, manage)
 
+-- | Runs the window effect using GLFW.
 runWindow :: (IOE :> es, Resource :> es) => Eff (Vk.Window GlfwWindow : es) a -> Eff es a
 runWindow m = do
   glfw <- manage initialize (const terminate)
