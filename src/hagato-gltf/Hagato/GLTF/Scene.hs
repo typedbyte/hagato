@@ -1,4 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLTF.Scene
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types and functions for handling scenes found in glTF files.
+-----------------------------------------------------------------------------
 module Hagato.GLTF.Scene where
 
 -- aeson
@@ -13,12 +24,16 @@ import Data.Vector.Storable qualified as S
 
 import Hagato.GLTF.Index (Index, NodeIx, SceneIx(value), get)
 
--- | The root nodes of a scene.
+-- | Represents the root nodes of a scene.
 data Scene = Scene
-  { nodes      :: S.Vector NodeIx
-  , name       :: Maybe T.Text
+  { nodes :: S.Vector NodeIx
+    -- ^ The indices of each root node.
+  , name :: Maybe T.Text
+    -- ^ The name of the scene.
   , extensions :: Maybe Object
-  , extras     :: Maybe Value
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
   }
   deriving (Eq, Ord, Show)
 

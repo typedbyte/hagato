@@ -1,4 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLTF.Node
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types and functions for handling nodes found in glTF files.
+-----------------------------------------------------------------------------
 module Hagato.GLTF.Node where
 
 -- aeson
@@ -19,23 +30,32 @@ import Data.Vector.Storable qualified as S
 
 import Hagato.GLTF.Index (CameraIx, Index, MeshIx, NodeIx(value), SkinIx, get)
 
--- | Represents a matrix or rotation/scale/translation transform.
+-- | Represents a matrix or rotation\/scale\/translation transform.
 data Transform
   = MatrixTransform Mat4
   | RotateScaleTranslate Quaternion Vec3 Vec3
   deriving (Eq, Ord, Show)
 
--- | A node in the node hierarchy. 
+-- | Represents a node in the node hierarchy.
 data Node = Node
-  { camera     :: Maybe CameraIx
-  , children   :: S.Vector NodeIx
-  , skin       :: Maybe SkinIx
-  , transform  :: Transform
-  , mesh       :: Maybe MeshIx
-  , weights    :: S.Vector Float
-  , name       :: Maybe T.Text
+  { camera :: Maybe CameraIx
+    -- ^ The index of the camera referenced by this node.
+  , children :: S.Vector NodeIx
+    -- ^ The indices of this node's children.
+  , skin :: Maybe SkinIx
+    -- ^ The index of the skin referenced by this node.
+  , transform :: Transform
+    -- ^ The transform applied to this node.
+  , mesh :: Maybe MeshIx
+    -- ^ The index of the mesh in this node.
+  , weights :: S.Vector Float
+    -- ^ The weights of the instantiated morph target.
+  , name :: Maybe T.Text
+    -- ^ The name of the node.
   , extensions :: Maybe Object
-  , extras     :: Maybe Value
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
   }
   deriving (Eq, Ord, Show)
 

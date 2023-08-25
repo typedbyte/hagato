@@ -1,4 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLTF.Material
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types and functions for handling materials found in glTF files.
+-----------------------------------------------------------------------------
 module Hagato.GLTF.Material where
 
 -- aeson
@@ -18,11 +29,15 @@ import Hagato.GLTF.Index             (Index, MaterialIx(value), get)
 import Hagato.GLTF.MetallicRoughness (MetallicRoughness, defaultRoughness)
 import Hagato.GLTF.TextureInfo       (NormalScale, Strength, TextureInfo)
 
--- | The alpha rendering mode of a material.
+-- | Represents the alpha rendering mode of a material.
 data AlphaMode
   = Opaque
+    -- ^ The alpha value is ignored, and the rendered output is fully opaque.
   | Mask
+    -- ^ The rendered output is either fully opaque or fully transparent depending
+    -- on the alpha value and the specified 'Hagato.GLTF.Material.alphaCutoff' value.
   | Blend
+    -- ^ The alpha value is used to composite the source and destination areas.
   deriving (Eq, Ord, Show)
 
 instance FromJSON AlphaMode where
@@ -33,19 +48,30 @@ instance FromJSON AlphaMode where
       "BLEND"  -> pure Blend
       invalid  -> failWithContext "AlphaMode" invalid
 
--- | The material appearance of a primitive.
+-- | Represents the material appearance of a primitive.
 data Material = Material
-  { name             :: Maybe T.Text
-  , extensions       :: Maybe Object
-  , extras           :: Maybe Value
-  , roughness        :: MetallicRoughness
-  , normalTexture    :: Maybe (TextureInfo NormalScale)
+  { name :: Maybe T.Text
+    -- ^ The name of the material.
+  , extensions :: Maybe Object
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
+  , roughness :: MetallicRoughness
+    -- ^ The metallic roughness of the material.
+  , normalTexture :: Maybe (TextureInfo NormalScale)
+    -- ^ The tangent space normal texture of the material.
   , occlusionTexture :: Maybe (TextureInfo Strength)
-  , emissiveTexture  :: Maybe (TextureInfo ())
-  , emissiveFactor   :: Vec3
-  , alphaMode        :: AlphaMode
-  , alphaCutoff      :: Float
-  , doubleSided      :: Bool
+    -- ^ The occlusion texture of the material.
+  , emissiveTexture :: Maybe (TextureInfo ())
+    -- ^ The emissive texture of the material.
+  , emissiveFactor :: Vec3
+    -- ^ The factors for the emissive color of the material.
+  , alphaMode :: AlphaMode
+    -- ^ The alpha rendering mode of the material.
+  , alphaCutoff :: Float
+    -- ^ The alpha cutoff value of the material.
+  , doubleSided :: Bool
+    -- ^ Specifies whether the material is double sided.
   }
   deriving (Eq, Ord, Show)
 

@@ -1,4 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLTF.Camera
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types and functions for handling cameras found in glTF files.
+-----------------------------------------------------------------------------
 module Hagato.GLTF.Camera where
 
 -- aeson
@@ -15,14 +26,20 @@ import Data.Vector qualified as V
 
 import Hagato.GLTF.Index (CameraIx(value), Index, get)
 
--- | A perspective camera containing properties to create a perspective projection matrix.
+-- | Represents the properties needed to create a perspective projection matrix.
 data PerspectiveData = PerspectiveData
   { aspectRatio :: Maybe Float
-  , yFov        :: Float
-  , zFar        :: Maybe Float
-  , zNear       :: Float
-  , extensions  :: Maybe Object
-  , extras      :: Maybe Value
+    -- ^ The floating-point aspect ratio of the field of view.
+  , yFov :: Float
+    -- ^ The floating-point vertical field of view in radians.
+  , zFar :: Maybe Float
+    -- ^ The floating-point distance to the far clipping plane.
+  , zNear :: Float
+    -- ^ The floating-point distance to the near clipping plane.
+  , extensions :: Maybe Object
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
   }
   deriving (Eq, Ord, Show)
 
@@ -36,14 +53,20 @@ instance FromJSON PerspectiveData where
       <*> v .:? "extensions"
       <*> v .:? "extras"
 
--- | An orthographic camera containing properties to create an orthographic projection matrix.
+-- | Represents the properties needed to create an orthographic projection matrix.
 data OrthographicData = OrthographicData
-  { xMag       :: Float
-  , yMag       :: Float
-  , zFar       :: Float
-  , zNear      :: Float
+  { xMag :: Float
+    -- ^ The floating-point horizontal magnification of the view.
+  , yMag :: Float
+    -- ^ The floating-point vertical magnification of the view.
+  , zFar :: Float
+    -- ^ The floating-point distance to the far clipping plane.
+  , zNear :: Float
+    -- ^ The floating-point distance to the near clipping plane.
   , extensions :: Maybe Object
-  , extras     :: Maybe Value
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
   }
   deriving (Eq, Ord, Show)
 
@@ -63,12 +86,17 @@ data Projection
   | Orthographic OrthographicData
   deriving (Eq, Ord, Show)
 
--- | A camera's projection. A node may reference a camera to apply a transform to place the camera in the scene.
+-- | Represents a camera. A node may reference a camera to apply a transform
+-- to place the camera in the scene.
 data Camera = Camera
   { projection :: Projection
-  , name       :: Maybe T.Text
+    -- ^ The properties needed to create a projection matrix.
+  , name :: Maybe T.Text
+    -- ^ The name of the camera.
   , extensions :: Maybe Object
-  , extras     :: Maybe Value
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
   }
   deriving (Eq, Ord, Show)
 

@@ -119,7 +119,6 @@ library with-gltf
   exposed-modules:
       Hagato.GLTF
       Hagato.GLTF.Accessor
-      Hagato.GLTF.Aeson
       Hagato.GLTF.Animation
       Hagato.GLTF.Asset
       Hagato.GLTF.AssetInfo
@@ -144,6 +143,8 @@ library with-gltf
       Hagato.GLTF.TextureInfo
       Hagato.GLTF.Transmission
       Hagato.GLTF.URI
+  other-modules:
+      Hagato.GLTF.Aeson
 
 library with-gltf-vulkan
   import:

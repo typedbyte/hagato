@@ -1,4 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLTF.URI
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types and functions for handling URIs found in glTF files.
+-----------------------------------------------------------------------------
 module Hagato.GLTF.URI where
 
 -- aeson
@@ -20,9 +31,12 @@ import System.FilePath ((</>))
 import Data.Text          qualified as T
 import Data.Text.Encoding qualified as T
 
-newtype URI = URI { unURI :: T.Text }
+-- | Represents a URI found in glTF files.
+newtype URI = URI T.Text
   deriving (Eq, Ord, Show, FromJSON)
 
+-- | Loads the resource of the specified URI. The provided file path is the root
+-- path from where relative paths are resolved.
 load :: (MonadFail m, MonadIO m) => Maybe FilePath -> URI -> m BS.ByteString
 load ctx (URI uri) =
   if T.isPrefixOf "data:" uri then

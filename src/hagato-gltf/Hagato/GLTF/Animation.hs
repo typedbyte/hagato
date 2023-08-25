@@ -1,4 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLTF.Animation
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types and functions for handling animations found in glTF files.
+-----------------------------------------------------------------------------
 module Hagato.GLTF.Animation where
 
 -- aeson
@@ -13,7 +24,7 @@ import Data.Vector qualified as V
 import Hagato.GLTF.Aeson (failWithContext)
 import Hagato.GLTF.Index (AccessorIx, AnimationIx(value), AnimationSamplerIx(value), Index(get), NodeIx)
 
--- | Interpolation algorithm.
+-- | Represents an interpolation algorithm.
 data Interpolation
   = Linear
   | Step
@@ -28,13 +39,19 @@ instance FromJSON Interpolation where
       "CUBICSPLINE" -> pure CubicSpline
       invalid       -> failWithContext "Interpolation" invalid
 
--- | An animation sampler combines timestamps with a sequence of output values and defines an interpolation algorithm.
+-- | An animation sampler combines timestamps with a sequence of output values
+-- and defines an interpolation algorithm.
 data AnimationSampler = AnimationSampler
-  { input         :: AccessorIx
+  { input :: AccessorIx
+    -- ^ The index of an accessor containing keyframe timestamps.
   , interpolation :: Interpolation
-  , output        :: AccessorIx
-  , extensions    :: Maybe Object
-  , extras        :: Maybe Value
+    -- ^ The interpolation algorithm.
+  , output :: AccessorIx
+    -- ^ The index of an accessor, containing keyframe output values.
+  , extensions :: Maybe Object
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
   }
   deriving (Eq, Ord, Show)
 
@@ -47,14 +64,17 @@ instance FromJSON AnimationSampler where
       <*> v .:? "extensions"
       <*> v .:? "extras"
 
--- | The name of the node's TRS property to animate, or the weights of the Morph Targets it instantiates.
--- For the translation property, the values that are provided by the sampler are the translation along the X, Y, and Z axes.
--- For the rotation property, the values are a quaternion in the order (x, y, z, w), where w is the scalar.
--- For the scale property, the values are the scaling factors along the X, Y, and Z axes.
+-- | Represents the node's property to animate, or the weights of the morph
+-- targets it instantiates.
 data Path
   = Translation
+    -- ^ Means that the values provided by the sampler are the translation along
+    -- the X, Y, and Z axes.
   | Rotation
+    -- ^ Means that the values are a quaternion in the order @(x, y, z, w)@, where
+    -- @w@ is the scalar.
   | Scale
+    -- ^ Means that the values are the scaling factors along the X, Y, and Z axes.
   | MorphTargetWeights
   deriving (Eq, Ord, Show)
 
@@ -67,12 +87,17 @@ instance FromJSON Path where
       "weights"     -> pure MorphTargetWeights
       invalid       -> failWithContext "Path" invalid
 
--- | The descriptor of the animated property.
+-- | Represents the descriptor of the animated property.
 data AnimationTarget = AnimationTarget
-  { node       :: Maybe NodeIx
-  , path       :: Path
+  { node :: Maybe NodeIx
+    -- ^ The index of the node to animate. When undefined, the animated object may
+    -- be defined by an extension.
+  , path :: Path
+    -- ^ The node's property to animate.
   , extensions :: Maybe Object
-  , extras     :: Maybe Value
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
   }
   deriving (Eq, Ord, Show)
 
@@ -84,12 +109,17 @@ instance FromJSON AnimationTarget where
       <*> v .:? "extensions"
       <*> v .:? "extras"
 
--- | An animation channel combines an animation sampler with a target property being animated.
+-- | An animation channel combines an animation sampler with a target property
+-- being animated.
 data Channel = Channel
-  { sampler    :: AnimationSamplerIx
-  , target     :: AnimationTarget
+  { sampler :: AnimationSamplerIx
+    -- ^ The index of a sampler in this animation used to compute the value for the target.
+  , target :: AnimationTarget
+    -- ^ The descriptor of the animated property.
   , extensions :: Maybe Object
-  , extras     :: Maybe Value
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
   }
   deriving (Eq, Ord, Show)
 
@@ -101,13 +131,18 @@ instance FromJSON Channel where
       <*> v .:? "extensions"
       <*> v .:? "extras"
 
--- | A keyframe animation.
+-- | Represents a keyframe animation.
 data Animation = Animation
-  { channels   :: V.Vector Channel
-  , samplers   :: V.Vector AnimationSampler
-  , name       :: Maybe T.Text
+  { channels :: V.Vector Channel
+    -- ^ A vector of animation channels.
+  , samplers :: V.Vector AnimationSampler
+    -- ^ A vector of animation samplers.
+  , name :: Maybe T.Text
+    -- ^ The name of the animation.
   , extensions :: Maybe Object
-  , extras     :: Maybe Value
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
   }
   deriving (Eq, Ord, Show)
 

@@ -1,4 +1,16 @@
 {-# LANGUAGE OverloadedStrings #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLTF.Asset
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types and functions for handling the actual scenes and models found in
+-- glTF files.
+-----------------------------------------------------------------------------
 module Hagato.GLTF.Asset where
 
 -- aeson
@@ -29,27 +41,46 @@ import Hagato.GLTF.Scene      (Scene)
 import Hagato.GLTF.Skin       (Skin)
 import Hagato.GLTF.Texture    (Texture)
 
--- | The root object for a glTF asset.
+-- | Represents the root object for a glTF asset.
 data Asset = Asset
-  { usedExtensions     :: V.Vector T.Text
+  { usedExtensions :: V.Vector T.Text
+    -- ^ The names of glTF extensions used in this asset.
   , requiredExtensions :: V.Vector T.Text
-  , accessors          :: V.Vector Accessor
-  , animations         :: V.Vector Animation
-  , info               :: AssetInfo
-  , buffers            :: V.Vector Buffer
-  , bufferViews        :: V.Vector BufferView
-  , cameras            :: V.Vector Camera
-  , images             :: V.Vector Image
-  , materials          :: V.Vector Material
-  , meshes             :: V.Vector Mesh
-  , nodes              :: V.Vector Node
-  , samplers           :: V.Vector Sampler
-  , scene              :: Maybe SceneIx
-  , scenes             :: V.Vector Scene
-  , skins              :: V.Vector Skin
-  , textures           :: V.Vector Texture
-  , extensions         :: Maybe Object
-  , extras             :: Maybe Value
+    -- ^ Names of glTF extensions required to properly load this asset.
+  , accessors :: V.Vector Accessor
+    -- ^ A vector of accessors.
+  , animations :: V.Vector Animation
+    -- ^ A vector of keyframe animations.
+  , info :: AssetInfo
+    -- ^ Metadata about the glTF asset.
+  , buffers :: V.Vector Buffer
+    -- ^ A vector of buffers.
+  , bufferViews :: V.Vector BufferView
+    -- ^ A vector of buffer views.
+  , cameras :: V.Vector Camera
+    -- ^ A vector of cameras.
+  , images :: V.Vector Image
+    -- ^ A vector of images.
+  , materials :: V.Vector Material
+    -- ^ A vector of materials.
+  , meshes :: V.Vector Mesh
+    -- ^ A vector of meshes.
+  , nodes :: V.Vector Node
+    -- ^ A vector of nodes.
+  , samplers :: V.Vector Sampler
+    -- ^ A vector of samplers.
+  , scene :: Maybe SceneIx
+    -- ^ The index of the default scene.
+  , scenes :: V.Vector Scene
+    -- ^ A vector of scenes.
+  , skins :: V.Vector Skin
+    -- ^ A vector of skins.
+  , textures :: V.Vector Texture
+    -- ^ A vector of textures.
+  , extensions :: Maybe Object
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
   }
   deriving (Eq, Ord, Show)
 
@@ -120,6 +151,7 @@ instance Index TextureIx Asset Texture where
   get i = get i . (.textures)
   {-# INLINE get #-}
 
+-- | Reads the asset of a binary glTF file.
 getAsset :: Get Asset
 getAsset = do
   dataLength <- getWord32le

@@ -1,6 +1,20 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLTF
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Re-export of @Hagato.GLTF.*@ sub-modules.
+--
+-- Reading and processing glTF transmissions usually starts with reading a
+-- glTF file using the functions defined in "Hagato.GLTF.Transmission", or by
+-- using the more convenient GLTFT monad transformer found in "Hagato.GLTF.Monad".
+-----------------------------------------------------------------------------
 module Hagato.GLTF
   ( module Hagato.GLTF.Accessor
-  , module Hagato.GLTF.Aeson
   , module Hagato.GLTF.Animation
   , module Hagato.GLTF.Asset
   , module Hagato.GLTF.AssetInfo
@@ -28,7 +42,6 @@ module Hagato.GLTF
   ) where
 
 import Hagato.GLTF.Accessor
-import Hagato.GLTF.Aeson
 import Hagato.GLTF.Animation
 import Hagato.GLTF.Asset
 import Hagato.GLTF.AssetInfo

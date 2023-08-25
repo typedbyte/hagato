@@ -1,4 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLTF.BufferView
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types and functions for handling buffer views found in glTF files.
+-----------------------------------------------------------------------------
 module Hagato.GLTF.BufferView where
 
 -- aeson
@@ -27,16 +38,24 @@ instance FromJSON BufferViewTarget where
       34963   -> pure ElementArrayBuffer
       invalid -> failWithContext "BufferViewTarget" invalid
 
--- | A view into a buffer generally representing a subset of the buffer.
+-- | Represents a view into a buffer, which can be seen as a subset of the buffer.
 data BufferView = BufferView
-  { buffer     :: BufferIx
+  { buffer :: BufferIx
+    -- ^ The index of the buffer.
   , byteOffset :: Int
+    -- ^ The offset into the buffer in bytes.
   , byteLength :: Int
+    -- ^ The length of the bufferView in bytes.
   , byteStride :: Maybe Int
-  , target     :: Maybe BufferViewTarget
-  , name       :: Maybe T.Text
+    -- ^ The stride, in bytes.
+  , target :: Maybe BufferViewTarget
+    -- ^ A hint representing the intended GPU buffer type to use with this buffer view.
+  , name :: Maybe T.Text
+    -- ^ The name of the buffer view.
   , extensions :: Maybe Object
-  , extras     :: Maybe Value
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
   }
   deriving (Eq, Ord, Show)
 

@@ -1,4 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLTF.Mesh
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types and functions for handling meshes found in glTF files.
+-----------------------------------------------------------------------------
 module Hagato.GLTF.Mesh where
 
 -- aeson
@@ -18,7 +29,7 @@ import Hagato.GLTF.Aeson     (failWithContext)
 import Hagato.GLTF.Attribute (Attribute)
 import Hagato.GLTF.Index     (AccessorIx, Index, MaterialIx, MeshIx(value), get)
 
--- | The topology type of primitives to render.
+-- | Represents the topology type of primitives to render.
 data PrimitiveMode
   = Points
   | Lines
@@ -42,15 +53,23 @@ instance FromJSON PrimitiveMode where
       6 -> pure TriangleFan
       i -> failWithContext "PrimitiveMode" i
 
--- | Geometry to be rendered with the given material.
+-- | Represents the geometry to be rendered with the given material.
 data Primitive = Primitive
   { attributes :: M.Map Attribute AccessorIx
-  , indices    :: Maybe AccessorIx
-  , material   :: Maybe MaterialIx
-  , mode       :: PrimitiveMode
-  , targets    :: V.Vector (M.Map Attribute AccessorIx)
+    -- ^ A map where each key corresponds to a mesh attribute semantic and each
+    -- value is the index of the accessor containing attribute's data.
+  , indices :: Maybe AccessorIx
+    -- ^ The index of the accessor that contains the vertex indices.
+  , material :: Maybe MaterialIx
+    -- ^ The index of the material to apply to this primitive when rendering.
+  , mode :: PrimitiveMode
+    -- ^ The topology type of primitives to render.
+  , targets :: V.Vector (M.Map Attribute AccessorIx)
+    -- ^ An array of morph targets.
   , extensions :: Maybe Object
-  , extras     :: Maybe Value
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
   }
   deriving (Eq, Ord, Show)
 
@@ -65,16 +84,19 @@ instance FromJSON Primitive where
       <*> v .:? "extensions"
       <*> v .:? "extras"
 
-getAttribute :: Attribute -> Primitive -> Maybe AccessorIx
-getAttribute attribute = M.lookup attribute . (.attributes)
-
--- | A set of primitives to be rendered. It's global transform is defined by a node that references it.
+-- | Represents a set of primitives to be rendered. It's global transform is
+-- defined by a node that references it.
 data Mesh = Mesh
   { primitives :: V.Vector Primitive
-  , weights    :: S.Vector Float
-  , name       :: Maybe T.Text
+    -- ^ The primitives, each defining geometry to be rendered.
+  , weights :: S.Vector Float
+    -- ^ The weights to be applied to the morph targets.
+  , name :: Maybe T.Text
+    -- ^ The name of the mesh.
   , extensions :: Maybe Object
-  , extras     :: Maybe Value
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
   }
   deriving (Eq, Ord, Show)
 
@@ -90,3 +112,7 @@ instance FromJSON Mesh where
 instance Index MeshIx (V.Vector Mesh) Mesh where
   get i vec = vec V.! i.value
   {-# INLINE get #-}
+
+-- | Gets a specified attribute of a primitive, if available.
+getAttribute :: Attribute -> Primitive -> Maybe AccessorIx
+getAttribute attribute = M.lookup attribute . (.attributes)

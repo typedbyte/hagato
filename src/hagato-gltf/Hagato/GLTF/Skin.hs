@@ -1,4 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLTF.Skin
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types and functions for handling skins found in glTF files.
+-----------------------------------------------------------------------------
 module Hagato.GLTF.Skin where
 
 -- aeson
@@ -12,14 +23,20 @@ import Data.Vector qualified as V
 
 import Hagato.GLTF.Index (AccessorIx, Index, NodeIx, SkinIx(value), get)
 
--- | Joints and matrices defining a skin.
+-- | Represents joints and matrices defining a skin.
 data Skin = Skin
-  { matrices   :: Maybe AccessorIx
-  , skeleton   :: Maybe NodeIx
-  , joints     :: V.Vector NodeIx
-  , name       :: Maybe T.Text
+  { matrices :: Maybe AccessorIx
+    -- ^ The index of the accessor containing the floating-point 4x4 inverse-bind matrices.
+  , skeleton :: Maybe NodeIx
+    -- ^ The index of the node used as a skeleton root.
+  , joints :: V.Vector NodeIx
+    -- ^ The indices of skeleton nodes, used as joints in this skin.
+  , name :: Maybe T.Text
+    -- ^ The name of the skin.
   , extensions :: Maybe Object
-  , extras     :: Maybe Value
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
   }
   deriving (Eq, Ord, Show)
 

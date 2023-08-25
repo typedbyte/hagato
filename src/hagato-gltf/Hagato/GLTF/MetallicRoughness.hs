@@ -1,4 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLTF.MetallicRoughness
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types and functions for handling metallic-roughness found in glTF files.
+-----------------------------------------------------------------------------
 module Hagato.GLTF.MetallicRoughness where
 
 -- aeson
@@ -9,14 +20,23 @@ import Hagato.Core (Vec4(Vec4))
 
 import Hagato.GLTF.TextureInfo (TextureInfo)
 
+-- | Represents a set of parameter values that are used to define the metallic-roughness
+-- material model from Physically-Based Rendering (PBR) methodology.
 data MetallicRoughness = MetallicRoughness
-  { baseColorFactor  :: Vec4
+  { baseColorFactor :: Vec4
+    -- ^ The factors for the base color of the material.
   , baseColorTexture :: Maybe (TextureInfo ())
-  , metallicFactor   :: Float
-  , roughnessFactor  :: Float
+    -- ^ The base color texture.
+  , metallicFactor :: Float
+    -- ^ The factor for the metalness of the material.
+  , roughnessFactor :: Float
+    -- ^ The factor for the roughness of the material.
   , roughnessTexture :: Maybe (TextureInfo ())
-  , extensions       :: Maybe Object
-  , extras           :: Maybe Value
+    -- ^ The metallic-roughness texture.
+  , extensions :: Maybe Object
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
   }
   deriving (Eq, Ord, Show)
 
@@ -33,6 +53,7 @@ instance FromJSON MetallicRoughness where
     where
       toVec4 (a, b, c, d) = Vec4 a b c d
 
+-- | Default metallic-roughness if it is not defined explicitly.
 defaultRoughness :: MetallicRoughness
 defaultRoughness =
   MetallicRoughness

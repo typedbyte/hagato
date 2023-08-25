@@ -1,5 +1,16 @@
 {-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE OverloadedStrings #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLTF.Accessor
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types and functions for handling accessors found in glTF files.
+-----------------------------------------------------------------------------
 module Hagato.GLTF.Accessor where
 
 -- aeson
@@ -42,17 +53,7 @@ instance FromJSON AttributeType where
       "MAT4"   -> pure Mat4
       invalid  -> failWithContext "AttributeType" invalid
 
-elementCount :: AttributeType -> Int
-elementCount = \case
-  Scalar -> 1
-  Vec2   -> 2
-  Vec3   -> 3
-  Vec4   -> 4
-  Mat2   -> 4
-  Mat3   -> 9
-  Mat4   -> 16
-
--- | The datatype of the an accessor's components.
+-- | Specifies the datatype of the an accessor's components.
 data ComponentType
   = Byte
   | UnsignedByte
@@ -74,23 +75,21 @@ instance FromJSON ComponentType where
       5126    -> pure Float
       invalid -> failWithContext "ComponentType" invalid
 
-componentByteSize :: ComponentType -> Int
-componentByteSize = \case
-  Byte          -> 1
-  UnsignedByte  -> 1
-  Short         -> 2
-  UnsignedShort -> 2
-  UnsignedInt   -> 4
-  Float         -> 4
-
--- | Sparse storage of accessor values that deviate from their initialization value.
+-- | Represents sparse storage of accessor values that deviate from their
+-- initialization value.
 data Sparse = Sparse
-  { count           :: Int
-  , ixBufferView    :: BufferViewIx
-  , ixByteOffset    :: Offset
+  { count :: Int
+    -- ^ The number of deviating accessor values stored in the sparse array.
+  , ixBufferView :: BufferViewIx
+    -- ^ The index of the buffer view with sparse indices.
+  , ixByteOffset :: Offset
+    -- ^ The offset relative to the start of the buffer view in bytes.
   , ixComponentType :: ComponentType
-  , valBufferView   :: BufferViewIx
-  , valByteOffset   :: Offset
+    -- ^ The indices data type.
+  , valBufferView :: BufferViewIx
+    -- ^ The index of the buffer view with sparse values.
+  , valByteOffset :: Offset
+    -- ^ The offset relative to the start of the buffer view in bytes.
   }
   deriving (Eq, Ord, Show)
 
@@ -107,19 +106,30 @@ instance FromJSON Sparse where
     pure $
       Sparse n ixBuf ixOff ixType valBuf valOff
 
--- | A typed view into a buffer view that contains raw binary data.
+-- | Represents a typed view into a buffer view that contains raw binary data.
 data Accessor = Accessor
-  { bufferView    :: Maybe (BufferViewIx, Offset)
+  { bufferView :: Maybe (BufferViewIx, Offset)
+    -- ^ The index of the buffer view.
   , componentType :: ComponentType
-  , normalized    :: Bool
-  , count         :: Int
+    -- ^ The datatype of the accessor's components.
+  , normalized :: Bool
+    -- ^ Specifies whether integer data values are normalized before usage.
+  , count :: Int
+    -- ^ The number of elements referenced by this accessor.
   , attributeType :: AttributeType
-  , max           :: S.Vector Float
-  , min           :: S.Vector Float
-  , sparse        :: Maybe Sparse
-  , name          :: Maybe T.Text
-  , extensions    :: Maybe Object
-  , extras        :: Maybe Value
+    -- ^ Specifies if the accessor's elements are scalars, vectors, or matrices.
+  , max :: S.Vector Float
+    -- ^ The maximum value of each component in this accessor.
+  , min :: S.Vector Float
+    -- ^ The minimum value of each component in this accessor.
+  , sparse :: Maybe Sparse
+    -- ^ The sparse storage of elements that deviate from their initialization value.
+  , name :: Maybe T.Text
+    -- ^ The name of the accessor.
+  , extensions :: Maybe Object
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
   }
   deriving (Eq, Ord, Show)
 
@@ -146,3 +156,24 @@ instance FromJSON Accessor where
 instance Index AccessorIx (V.Vector Accessor) Accessor where
   get i vec = vec V.! i.value
   {-# INLINE get #-}
+
+-- | Gets the element count of the specified attribute type.
+elementCount :: AttributeType -> Int
+elementCount = \case
+  Scalar -> 1
+  Vec2   -> 2
+  Vec3   -> 3
+  Vec4   -> 4
+  Mat2   -> 4
+  Mat3   -> 9
+  Mat4   -> 16
+
+-- | Gets the byte size of the specified component type.
+componentByteSize :: ComponentType -> Int
+componentByteSize = \case
+  Byte          -> 1
+  UnsignedByte  -> 1
+  Short         -> 2
+  UnsignedShort -> 2
+  UnsignedInt   -> 4
+  Float         -> 4

@@ -1,4 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLTF.Image
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types and functions for handling images found in glTF files.
+-----------------------------------------------------------------------------
 module Hagato.GLTF.Image where
 
 -- aeson
@@ -17,7 +28,7 @@ import Hagato.GLTF.Aeson (failWithContext)
 import Hagato.GLTF.Index (BufferViewIx, ImageIx(value), Index, get)
 import Hagato.GLTF.URI   (URI)
 
--- | The image's media type.
+-- | Represents the image's media type.
 data MimeType
   = JPEG
   | PNG
@@ -30,18 +41,24 @@ instance FromJSON MimeType where
       "image/png"  -> pure PNG
       invalid      -> failWithContext "MimeType" invalid
 
--- | The payload of the image data.
+-- | Represents the payload of the image data.
 data ImageData
   = ImageBuffer BufferViewIx MimeType
+    -- ^ The index of the buffer view holding the payload.
   | ImageURI URI (Maybe MimeType)
+    -- ^ The URI of the image. Relative paths are relative to the current glTF asset.
   deriving (Eq, Ord, Show)
 
--- | Image data used to create a texture.
+-- | Represents the image data used to create a texture.
 data Image = Image
-  { imageData  :: ImageData
-  , name       :: Maybe T.Text
+  { imageData :: ImageData
+    -- ^ The payload of the image.
+  , name :: Maybe T.Text
+    -- ^ The name of the object.
   , extensions :: Maybe Object
-  , extras     :: Maybe Value
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
   }
   deriving (Eq, Ord, Show)
 

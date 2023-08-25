@@ -1,4 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLTF.Buffer
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types and functions for handling buffers found in glTF files.
+-----------------------------------------------------------------------------
 module Hagato.GLTF.Buffer where
 
 -- aeson
@@ -13,13 +24,18 @@ import Data.Vector qualified as V
 import Hagato.GLTF.Index (BufferIx(value), Index, get)
 import Hagato.GLTF.URI   (URI)
 
--- | A buffer points to binary geometry, animation, or skins.
+-- | Represents a buffer which points to binary geometry, animation, or skins.
 data Buffer = Buffer
-  { uri        :: Maybe URI
+  { uri :: Maybe URI
+    -- ^ The URI of the buffer.
   , byteLength :: Int
-  , name       :: Maybe T.Text
+    -- ^ The length of the buffer in bytes.
+  , name :: Maybe T.Text
+    -- ^ The name of the buffer.
   , extensions :: Maybe Object
-  , extras     :: Maybe Value
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
   }
   deriving (Eq, Ord, Show)
 

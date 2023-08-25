@@ -1,4 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLTF.Sampler
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types and functions for handling samplers found in glTF files.
+-----------------------------------------------------------------------------
 module Hagato.GLTF.Sampler where
 
 -- aeson
@@ -13,7 +24,7 @@ import Data.Vector qualified as V
 import Hagato.GLTF.Aeson (failWithContext)
 import Hagato.GLTF.Index (Index, SamplerIx(value), get)
 
--- | Magnification filter.
+-- | Represents a magnification filter.
 data MagnificationFilter
   = MagnificationNearest
   | MagnificationLinear
@@ -28,7 +39,7 @@ instance FromJSON MagnificationFilter where
       9729    -> pure MagnificationLinear
       invalid -> failWithContext "MagnificationFilter" invalid
 
--- | Minification filter.
+-- | Represents a minification filter.
 data MinificationFilter
   = MinificationNearest
   | MinificationLinear
@@ -51,7 +62,7 @@ instance FromJSON MinificationFilter where
       9987    -> pure LinearMipmapLinear
       invalid -> failWithContext "MinificationFilter" invalid
 
--- | S (U) / T (V) wrapping mode.
+-- | Represents the S (U)\/T (V) wrapping mode.
 data WrappingMode
   = ClampToEdge
   | MirroredRepeat
@@ -67,15 +78,22 @@ instance FromJSON WrappingMode where
       10497   -> pure Repeat
       invalid -> failWithContext "WrappingMode" invalid
 
--- | Texture sampler properties for filtering and wrapping modes.
+-- | Represents the texture sampler properties for filtering and wrapping modes.
 data Sampler = Sampler
-  { magFilter  :: MagnificationFilter
-  , minFilter  :: MinificationFilter
-  , wrapS      :: WrappingMode
-  , wrapT      :: WrappingMode
-  , name       :: Maybe T.Text
+  { magFilter :: MagnificationFilter
+    -- ^ The magnification filter.
+  , minFilter :: MinificationFilter
+    -- ^ The minification filter.
+  , wrapS :: WrappingMode
+    -- ^ The S (U) wrapping mode.
+  , wrapT :: WrappingMode
+    -- ^ The T (V) wrapping mode.
+  , name :: Maybe T.Text
+    -- ^ The name of the sampler.
   , extensions :: Maybe Object
-  , extras     :: Maybe Value
+    -- ^ A JSON object with extension-specific objects.
+  , extras :: Maybe Value
+    -- ^ Application-specific data.
   }
   deriving (Eq, Ord, Show)
 
@@ -94,6 +112,7 @@ instance Index SamplerIx (V.Vector Sampler) Sampler where
   get i vec = vec V.! i.value
   {-# INLINE get #-}
 
+-- | Default sampler if it is not defined explicitly.
 defaultSampler :: Sampler
 defaultSampler =
   Sampler
