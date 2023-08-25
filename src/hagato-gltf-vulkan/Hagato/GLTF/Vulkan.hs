@@ -1,5 +1,16 @@
 {-# LANGUAGE DataKinds  #-}
 {-# LANGUAGE LambdaCase #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.GLTF.Vulkan
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Utility functions for converting glTF objects to Vulkan objects.
+-----------------------------------------------------------------------------
 module Hagato.GLTF.Vulkan
   ( toIndexType
   , toSamplerInfo
@@ -12,6 +23,7 @@ import Hagato.GLTF qualified as GLTF
 import Vulkan      qualified as Vk
 import Vulkan.Zero qualified as Vk
 
+-- | Converts a glTF component type to a Vulkan index type.
 toIndexType :: GLTF.ComponentType -> Vk.IndexType
 toIndexType = \case
   GLTF.Byte          -> Vk.INDEX_TYPE_UINT8_EXT
@@ -21,6 +33,7 @@ toIndexType = \case
   GLTF.UnsignedInt   -> Vk.INDEX_TYPE_UINT32
   GLTF.Float         -> Vk.INDEX_TYPE_UINT32
 
+-- | Converts a glTF sampler to an object describing a Vulkan sampler.
 toSamplerInfo :: GLTF.Sampler -> Vk.SamplerCreateInfo '[]
 toSamplerInfo sampler =
   Vk.zero
