@@ -28,7 +28,7 @@ import Hagato.Vulkan.Effectful qualified as Vk
 -- resource-effectful
 import Effectful.Resource (Resource, manage)
 
--- | Runs the window effect using GLFW.
+-- | Runs the 'Vk.Window' effect using GLFW.
 runWindow :: (IOE :> es, Resource :> es) => Eff (Vk.Window GlfwWindow : es) a -> Eff es a
 runWindow m = do
   glfw <- manage initialize (const terminate)

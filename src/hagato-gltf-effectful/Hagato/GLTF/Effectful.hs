@@ -55,7 +55,7 @@ type instance DispatchOf GLTF = Static WithSideEffects
 
 newtype instance StaticRep GLTF = GLTF (GLTF.Transmission, GLTF.Cache)
 
--- | Runs the glTF effect on a specific glTF transmission and extracts the final
+-- | Runs the t'GLTF' effect on a specific glTF transmission and extracts the final
 -- value from it.
 runGLTF :: IOE :> es => GLTF.Source -> Eff (GLTF : es) a -> Eff es a
 runGLTF source m =

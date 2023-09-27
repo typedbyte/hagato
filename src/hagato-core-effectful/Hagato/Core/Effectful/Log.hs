@@ -37,7 +37,7 @@ type instance DispatchOf (Log s) = Static WithSideEffects
 
 newtype instance StaticRep (Log s) = Log (Logger s)
 
--- | Runs the logging effect.
+-- | Runs the t'Log' effect.
 runLog :: IOE :> es => Logger s -> Eff (Log s : es) a -> Eff es a
 runLog = evalStaticRep . Log
 

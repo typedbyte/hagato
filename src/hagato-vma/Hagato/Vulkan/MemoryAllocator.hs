@@ -1,5 +1,16 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE OverloadedRecordDot   #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.Vulkan.MemoryAllocator
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- A GPU memory management strategy based on the Vulkan Memory Allocator (VMA).
+-----------------------------------------------------------------------------
 module Hagato.Vulkan.MemoryAllocator
   ( memoryStrategy
   , module VulkanMemoryAllocator
@@ -19,6 +30,8 @@ import Vulkan.Dynamic qualified as Vk
 import VulkanMemoryAllocator
 import VulkanMemoryAllocator qualified as VMA
 
+-- | Creates a GPU memory management strategy based on the Vulkan Memory
+-- Allocator (VMA).
 memoryStrategy :: VMA.AllocationCreateFlagBits -> Vk.MemoryStrategy VMA.Allocator VMA.Allocation
 memoryStrategy allocFlags =
   Vk.MemoryStrategy
