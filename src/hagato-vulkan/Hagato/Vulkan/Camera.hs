@@ -1,3 +1,14 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.Vulkan.Camera
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Types and functions for handling Vulkan-compatible cameras.
+-----------------------------------------------------------------------------
 module Hagato.Vulkan.Camera
   ( projectionMatrix
   , inverseProjectionMatrix
@@ -9,6 +20,7 @@ module Hagato.Vulkan.Camera
 -- hagato:with-core
 import Hagato.Core
 
+-- | Computes a Vulkan-compatible projection matrix from a given camera.
 projectionMatrix :: Camera -> Mat4
 projectionMatrix Camera{frustum} =
   case frustum of
@@ -63,12 +75,18 @@ orthographic left right top bottom near far =
              0        0  (1 / fmn)             (far / fmn)
              0        0         0                       1
 
+-- | Computes a Vulkan-compatible inverse projection matrix from a given camera.
+--
+-- If you have already obtained the projection matrix of the camera (see 'projectionMatrix'),
+-- use 'inverseFromProjection' instead for better performance.
 inverseProjectionMatrix :: Camera -> Mat4
 inverseProjectionMatrix camera =
   inverseFromProjection
     ( camera )
     ( projectionMatrix camera )
 
+-- | Computes a Vulkan-compatible inverse projection matrix from a given camera and
+-- its projection matrix.
 inverseFromProjection :: Camera -> Mat4 -> Mat4
 inverseFromProjection camera
   ( Mat4
@@ -92,7 +110,17 @@ inverseFromProjection camera
              0     0  (1/z) (-tz/z)
              0     0     0       1
 
-ray :: Vec2 -> Vec2 -> Camera -> Ray
+-- | Computes a ray going from a given camera through a specified viewport point.
+-- Note that it is not guaranteed that the origin of the ray is at the camera position.
+--
+-- If you have already obtained the inverse view matrix and the inverse projection matrix
+-- of the camera (see 'inverseViewMatrix' and 'inverseProjectionMatrix'), use 'rayFromInverse'
+-- instead for better performance.
+ray
+  :: Vec2   -- ^ The point within the viewport (x/y from top left).
+  -> Vec2   -- ^ The viewport size (width/height).
+  -> Camera -- ^ The camera from which the ray is cast to the point.
+  -> Ray    -- ^ The computed ray.
 ray point viewport camera =
   rayFromInverse
     ( point )
@@ -100,7 +128,14 @@ ray point viewport camera =
     ( inverseViewMatrix camera )
     ( inverseProjectionMatrix camera )
 
-rayFromInverse :: Vec2 -> Vec2 -> Mat4 -> Mat4 -> Ray
+-- | Computes a ray going from a given camera through a specified viewport point.
+-- Note that it is not guaranteed that the origin of the ray is at the camera position.
+rayFromInverse
+  :: Vec2 -- ^ The point within the viewport (x/y from top left).
+  -> Vec2 -- ^ The viewport size (width/height).
+  -> Mat4 -- ^ The inverse view matrix of the camera.
+  -> Mat4 -- ^ The inverse projection matrix of the camera.
+  -> Ray  -- ^ The computed ray.
 rayFromInverse (Vec2 x y) (Vec2 width height) invView invProj =
   Ray origin direction
   where

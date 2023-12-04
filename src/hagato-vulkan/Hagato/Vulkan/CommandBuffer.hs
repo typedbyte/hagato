@@ -1,3 +1,14 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Hagato.Vulkan.CommandBuffer
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Convenience functions and re-exports for handling Vulkan command buffers.
+-----------------------------------------------------------------------------
 module Hagato.Vulkan.CommandBuffer
   ( withCommandBuffers
   , module Vulkan.Core10.CommandBuffer
@@ -16,6 +27,7 @@ import Data.Vector qualified as V
 import Vulkan                      qualified as Vk
 import Vulkan.Core10.CommandBuffer hiding (withCommandBuffers)
 
+-- | A convenient wrapper around 'allocateCommandBuffers' and 'freeCommandBuffers'.
 withCommandBuffers
   :: MonadUnliftIO m
   => Vk.Device

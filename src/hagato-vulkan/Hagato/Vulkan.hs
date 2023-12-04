@@ -1,3 +1,13 @@
+-- |
+-- Module      : Hagato.Vulkan
+-- Copyright   : (c) Michael Szvetits, 2023
+-- License     : BSD-3-Clause (see the file LICENSE)
+-- Maintainer  : typedbyte@qualified.name
+-- Stability   : stable
+-- Portability : portable
+--
+-- Re-export of @Hagato.Vulkan.*@ and Vulkan-related sub-modules.
+-----------------------------------------------------------------------------
 module Hagato.Vulkan
   ( module Hagato.Vulkan.Buffer
   , module Hagato.Vulkan.Builder
